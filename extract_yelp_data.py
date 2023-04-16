@@ -37,13 +37,12 @@ def extract_user_data(data):
 def upload_yelp_user_data_to_s3_bucket(user_file_path: str, user_id_list: list):
     count = 0
     print("Uploading data to 'user' folder in S3 Bucket.")
-    for idx, user_id in enumerate(user_id_list):
+    for user_id in user_id_list:
         with open(user_file_path, 'r', encoding="utf-8") as user_lines:
-            for index, line in enumerate(user_lines):
+            for line in user_lines:
                 data = json.loads(line)
                 if data['user_id'] == user_id:
                     count += 1
-                    print(f"{idx=} | {data['user_id']} and {user_id}(from dict) matches in {index + 1} index.")
                     user_data = extract_user_data(data)
                     upload_file_to_s3(json.dumps(user_data), f"user/user-{str(uuid.uuid4())}.json")
                     break
@@ -55,13 +54,12 @@ def upload_yelp_user_data_to_s3_bucket(user_file_path: str, user_id_list: list):
 def upload_yelp_business_data_to_s3_bucket(business_file_path: str, business_id_list: list):
     count = 0
     print("Uploading data to 'business' folder in S3 Bucket.")
-    for idx, business_id in enumerate(business_id_list):
+    for business_id in business_id_list:
         with open(business_file_path, 'r', encoding="utf-8") as business_lines:
-            for index, line in enumerate(business_lines):
+            for line in business_lines:
                 data = json.loads(line)
                 if data['business_id'] == business_id:
                     count += 1
-                    print(f"{idx=} | {data['business_id']} and {business_id}(from dict) matches in {index + 1} index.")
                     upload_file_to_s3(json.dumps(data), f"business/business-{str(uuid.uuid4())}.json")
                     break
     print(f"uploading count = {count}")
@@ -82,16 +80,10 @@ def find_associated_ids_with_first_thousand_review_data(review_json_path: str) -
         # return unique ids
     return [*set(associated_user_ids)], [*set(associated_business_ids)]
 
-# # function that takes s3 bucket name and return s3 bucket object length in 'review' folder.
-# def get_s3_bucket_review_data_length(bucket_name: str) -> int:
-#     s3_bucket_object = s3.Bucket(bucket_name)
-#     review_folder_object = s3_bucket_object.Object('review')
-#     return review_folder_object.content_length
-
 
 if __name__ == '__main__':
     user_ids, business_ids = find_associated_ids_with_first_thousand_review_data(
         r"D:\Zip\yelp_academic_dataset_review.json")
-    # upload_yelp_review_data_to_s3_bucket(r"D:\Zip\yelp_academic_dataset_review.json")
-    # upload_yelp_business_data_to_s3_bucket(r"D:\Zip\yelp_academic_dataset_business.json", business_ids)
+    upload_yelp_review_data_to_s3_bucket(r"D:\Zip\yelp_academic_dataset_review.json")
+    upload_yelp_business_data_to_s3_bucket(r"D:\Zip\yelp_academic_dataset_business.json", business_ids)
     upload_yelp_user_data_to_s3_bucket(r"D:\Zip\yelp_academic_dataset_user.json", user_ids)
