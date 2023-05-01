@@ -6,6 +6,7 @@ from utils import calculate_passing_time, upload_file_to_s3
 
 @calculate_passing_time
 def upload_yelp_review_data_to_s3_bucket(review_file_path):
+    review_records = []
     print("Uploading data to 'review' folder in S3 Bucket.")
     with open(review_file_path, 'r', encoding="utf-8") as f:
         s3_file_name = review_file_path.split('_')[-1].split('.')[0]
@@ -15,8 +16,10 @@ def upload_yelp_review_data_to_s3_bucket(review_file_path):
                 print("yelp_review data upload process finished here")
                 break
             data = json.loads(line)
+            review_records.append(data)
             print(f"index = {index + 1} | {data['review_id']}")
-            upload_file_to_s3(json.dumps(data), f"review/review-{str(uuid.uuid4())}.json")
+
+    upload_file_to_s3(json.dumps(review_records), "review-yelp.json")
 
 
 def extract_user_data(data):
@@ -35,34 +38,32 @@ def extract_user_data(data):
 
 @calculate_passing_time
 def upload_yelp_user_data_to_s3_bucket(user_file_path: str, user_id_list: list):
-    count = 0
+    user_records = []
     print("Uploading data to 'user' folder in S3 Bucket.")
     for user_id in user_id_list:
         with open(user_file_path, 'r', encoding="utf-8") as user_lines:
             for line in user_lines:
                 data = json.loads(line)
                 if data['user_id'] == user_id:
-                    count += 1
                     user_data = extract_user_data(data)
-                    upload_file_to_s3(json.dumps(user_data), f"user/user-{str(uuid.uuid4())}.json")
+                    user_records.append(user_data)
                     break
-    print(f"uploading count = {count}")
+    upload_file_to_s3(json.dumps(user_records), "user-yelp.json")
     print("'user' upload process finished.")
 
 
 @calculate_passing_time
 def upload_yelp_business_data_to_s3_bucket(business_file_path: str, business_id_list: list):
-    count = 0
+    business_record = []
     print("Uploading data to 'business' folder in S3 Bucket.")
     for business_id in business_id_list:
         with open(business_file_path, 'r', encoding="utf-8") as business_lines:
             for line in business_lines:
                 data = json.loads(line)
                 if data['business_id'] == business_id:
-                    count += 1
-                    upload_file_to_s3(json.dumps(data), f"business/business-{str(uuid.uuid4())}.json")
+                    business_record.append(data)
                     break
-    print(f"uploading count = {count}")
+    upload_file_to_s3(json.dumps(business_record), "business-yelp.json")
     print("business' upload process finished.")
 
 

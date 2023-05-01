@@ -22,7 +22,7 @@ def calculate_passing_time(func):
     return wrapper
 
 
-def upload_file_to_s3(data, remote_file_path, s3_bucket_name='yelpetlorchestrationbucket'):
+def upload_file_to_s3(data, remote_file_path, s3_bucket_name='my-yelp-data-bucket'):
     """
     Uploads a local file to an S3 bucket.
 
