@@ -22,20 +22,6 @@ def upload_yelp_review_data_to_s3_bucket(review_file_path):
     upload_file_to_s3(json.dumps(review_records), "review-yelp.json")
 
 
-def extract_user_data(data):
-    return {
-        "user_id": data["user_id"],
-        "name": data["name"],
-        "review_count": data["review_count"],
-        "yelping_since": data["yelping_since"],
-        "useful": data["useful"],
-        "cool": data["cool"],
-        "funny": data["funny"],
-        "fans": data["fans"],
-        "average_stars": data["average_stars"],
-    }
-
-
 @calculate_passing_time
 def upload_yelp_user_data_to_s3_bucket(user_file_path: str, user_id_list: list):
     user_records = []
@@ -45,8 +31,7 @@ def upload_yelp_user_data_to_s3_bucket(user_file_path: str, user_id_list: list):
             for line in user_lines:
                 data = json.loads(line)
                 if data['user_id'] == user_id:
-                    user_data = extract_user_data(data)
-                    user_records.append(user_data)
+                    user_records.append(data)
                     break
     upload_file_to_s3(json.dumps(user_records), "user-yelp.json")
     print("'user' upload process finished.")
