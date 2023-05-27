@@ -28,7 +28,6 @@ SELECT user.user_id,
   user.review_count_of_user,
   user.cool,
   review.review_id,
-  review.stars,
   review.useful,
   review.stars_of_review,
   review.sentiment_analysis_of_review,
@@ -45,7 +44,7 @@ FROM "yelp_business_processed" as business
   JOIN "yelp_review_processed" as review ON business.business_id = review.business_id
   JOIN "yelp_user_processed" as user ON review.user_id = user.user_id;
 """
-athena_output_bucket = "s3://yelp-athena-query-outputs-bucket/"
+athena_output_bucket = "s3://yelp-athena-query-outputs-bucket/athena_airflow_output/"
 
 
 def starting_dag():
@@ -154,7 +153,7 @@ def start_glue_job(job_name: str):
 
 
 default_args = {
-    'owner': 'tudi',
+    'owner': 'tudimudi',
     'start_date': datetime(2023, 5, 23),
     'retries': 3,
     'retry_delay': timedelta(minutes=5)
@@ -168,7 +167,6 @@ dag = DAG(
     default_args=default_args,
     catchup=False
 )
-
 
 create_glue_job_task = PythonOperator(
     task_id="create_glue_job",
@@ -227,6 +225,5 @@ athena_table_task = AthenaOperator(
     output_location=athena_output_bucket
 )
 
-
 create_glue_job_task >> start_glue_job_task >> create_glue_catalog_db
-create_glue_catalog_db >> [reviirew_crawler, business_crawler, user_crawler] >> athena_table_task
+create_glue_catalog_db >> [review_crawler, business_crawler, user_crawler] >> athena_table_task
