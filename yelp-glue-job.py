@@ -96,8 +96,8 @@ def process_yelp_business_data():
 
     # Drop unnecessary fields
     latest_business_dynamic_frame = unnested_pre_business_dyf.drop_fields(
-        ["hours", "attributes", 'attributes.Ambience', 'attributes.Music', 'attributes.GoodForMeal',
-         'attributes.BusinessParking'])
+        ["hours", "attributes", "`attributes.Ambience`", "`attributes.Music`", "`attributes.GoodForMeal`",
+         "`attributes.BusinessParking`"])
 
     # Save processed business dynamic frame to S3 Bucket as .parquet format
     save_dynamic_frame_to_S3(latest_business_dynamic_frame, "s3://glue-yelp-output/yelp-business-processed")
