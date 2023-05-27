@@ -52,7 +52,7 @@ def upload_yelp_business_data_to_s3_bucket(business_file_path: str, business_id_
     print("business' upload process finished.")
 
 
-def find_associated_ids_with_first_thousand_review_data(review_json_path: str) -> tuple:
+def find_associated_ids_with_first_thousand_review_data(review_json_path: str):
     associated_user_ids = []
     associated_business_ids = []
 
