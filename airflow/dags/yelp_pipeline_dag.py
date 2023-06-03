@@ -47,14 +47,6 @@ FROM "yelp_business_processed" as business
 athena_output_bucket = "s3://yelp-athena-query-outputs-bucket/athena_airflow_output/"
 
 
-def starting_dag():
-    print("Starting DAG")
-
-
-def ending_dag():
-    print("Ending DAG")
-
-
 def create_glue_database(glue_catalog_db_name: str):
     glue.create_database(
         DatabaseInput={
@@ -153,10 +145,10 @@ def start_glue_job(job_name: str):
 
 
 default_args = {
-    'owner': 'tudimudi',
-    'start_date': datetime(2023, 5, 23),
-    'retries': 3,
-    'retry_delay': timedelta(minutes=5)
+    'owner': 'yelp-airflow-user',
+    'start_date': datetime(2023, 5, 31),
+    'retries': 5,
+    'retry_delay': timedelta(minutes=2)
 }
 
 dag = DAG(
