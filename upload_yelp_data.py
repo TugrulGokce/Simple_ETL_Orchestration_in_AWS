@@ -17,7 +17,6 @@ def upload_yelp_review_data_to_s3_bucket(review_file_path):
                 break
             data = json.loads(line)
             review_records.append(data)
-            print(f"index = {index + 1} | {data['review_id']}")
 
     upload_file_to_s3(json.dumps(review_records), "review-yelp.json")
 
