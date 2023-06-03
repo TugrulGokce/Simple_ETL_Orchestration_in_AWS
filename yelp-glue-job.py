@@ -56,18 +56,19 @@ def save_dynamic_frame_to_S3(dynamic_frame: DynamicFrame, s3_file_path: str):
 
 
 def process_yelp_business_data():
-    # Read review yelp JSON file from S3 and save as a dynamic_frame
+    # Step 1: Reading business yelp JSON file from S3 and save as a dynamic_frame
     business_dynamic_frame = read_json_from_s3_and_convert_dynamic_frame("s3://yelp-data-bucket1/business-yelp.json")
-    # Rename fields
+
+    # Step 2: Renaming fields
     business_dynamic_frame = business_dynamic_frame.rename_field("`name`", "business_name") \
         .rename_field("`review_count`", "review_count_of_business") \
         .rename_field("`stars`", "stars_of_business")
 
-    # Convert string values that look like JSON to JSON
+    # Step 3: Converts the business dynamic frame into a list of dictionaries for easier data manipulation and analysis.
     business_data_list = business_dynamic_frame.toDF().collect()
     business_dict_list = [row.asDict() for row in business_data_list]
 
-    # Convert string nested values that look like JSON to JSON
+    # Step 4: Converting the string nested values that look like JSON to JSON
     for business_data_dict in business_dict_list:
         if isinstance(business_data_dict["hours"], T.Row):
             business_data_dict["hours"] = business_data_dict["hours"].asDict()
@@ -79,61 +80,61 @@ def process_yelp_business_data():
                         business_data_dict["attributes"][inner_attributes_key] not in ['None', '{}', None]:
                     business_data_dict["attributes"][inner_attributes_key] = eval(inner_attributes_value)
 
-    # Create an S3 client
+    # Step 5:
+    # Creating an S3 client
     s3_client = boto3.client('s3')
-
     # Write the multiline JSON string to S3
     s3_bucket = 'glue-yelp-output'
     s3_key = 'yelp-business-preprocessed/preprocessed_business_yelp.json'
     s3_client.put_object(Body=json.dumps(business_dict_list).encode('utf-8'), Bucket=s3_bucket, Key=s3_key)
 
-    ## Business icin transformasyon islemleri
+    # Step 6: Reading preprocessed data from S3 Bucket
     preprocessed_business_dynamic_frame = read_json_from_s3_and_convert_dynamic_frame(
         "s3://glue-yelp-output/yelp-business-preprocessed/preprocessed_business_yelp.json")
 
-    # Flatten preprocessed_business_dynamic_frame
+    # Step 7: Flattening the preprocessed_business_dynamic_frame
     unnested_pre_business_dyf = preprocessed_business_dynamic_frame.unnest()
 
-    # Drop unnecessary fields
+    # Step 8: Dropping the unnecessary fields
     latest_business_dynamic_frame = unnested_pre_business_dyf.drop_fields(
         ["hours", "attributes", "`attributes.Ambience`", "`attributes.Music`", "`attributes.GoodForMeal`",
          "`attributes.BusinessParking`"])
 
-    # Save processed business dynamic frame to S3 Bucket as .parquet format
+    # Step 8: Saving processed business dynamic frame to S3 Bucket as .parquet format
     save_dynamic_frame_to_S3(latest_business_dynamic_frame, "s3://glue-yelp-output/yelp-business-processed")
 
 
 def process_yelp_user_data():
-    # Read user yelp JSON file from S3 and save as a dynamic_frame
+    # Step 1: Reading user yelp JSON file from S3 and save as a dynamic_frame
     user_dynamic_frame = read_json_from_s3_and_convert_dynamic_frame("s3://yelp-data-bucket1/user-yelp.json")
 
-    # Select fields !!!
+    # Step 2 : Selecting fields that  are needed
     latest_user_dynamic_frame = user_dynamic_frame.select_fields(
         ["user_id", "name", "review_count", "yelping_since", "useful", "cool", "funny", "fans", "average_stars"])
 
-    # rename fields
+    # Step 3: Renaming fields
     latest_user_dynamic_frame = latest_user_dynamic_frame.rename_field("`name`", "user_name").rename_field(
         "`review_count`", "review_count_of_user")
 
-    # Save processed user dynamic frame to S3 Bucket as .parquet format
+    # Step 4 : Saving processed user dynamic frame to S3 Bucket as .parquet format
     save_dynamic_frame_to_S3(latest_user_dynamic_frame, "s3://glue-yelp-output/yelp-user-processed")
 
 
 def process_yelp_review_data():
-    # Read review yelp JSON file from S3 using with awswrangler as a pandas.DataFrame
+    # Step 1: Reading review-yelp JSON file from S3 using with awswrangler as a pandas.DataFrame
     review_df = wr.s3.read_json(path='s3://yelp-data-bucket1/review-yelp.json')
 
+    # Step 2: Renaming field.
     review_df.rename(columns={"stars": "stars_of_review"}, inplace=True)
 
-    # Apply sentiment analysis to review text and create a new column for analysis
+    # Step 3: Applying sentiment analysis to review text and create a new column for analysis
     review_df["sentiment_analysis_of_review"] = review_df["text"].apply(sentiment_Flair)
 
-    # Storing data on Data Lake
+    # Step 4: Storing processed data to S3 Bucket as .parquet format
     wr.s3.to_parquet(
         df=review_df,
         path="s3://glue-yelp-output/yelp-review-processed/processed-yelp-review.parquet"
     )
-
 
 if __name__ == '__main__':
     ## @params: [JOB_NAME]
