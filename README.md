@@ -21,8 +21,8 @@ In the era of data-driven decision making, ETL processes play a critical role. T
 ## Setup & Usage
 1. Clone this repository to your local machine.
 2. Set up your AWS account and configure AWS Glue and AWS MWAA as per the instructions in the Medium blog post.
-   Use the code scripts provided in this repository to define your ETL jobs in AWS Glue and orchestrate them using MWAA.
-3. A detailed, step-by-step guide is provided in the [Medium](https://medium.com/@TugrulGokce/etl-orchestration-on-yelp-dataset-using-glue-and-aws-mwaa-airflow-bcdfc676e46b) blog post.
+3. Use the code scripts provided in this repository to define your ETL jobs in AWS Glue and orchestrate them using MWAA.
+4. A detailed, step-by-step guide is provided in the [Medium](https://medium.com/@TugrulGokce/etl-orchestration-on-yelp-dataset-using-glue-and-aws-mwaa-airflow-bcdfc676e46b) blog post.
 
 ## Contact
 If you have any questions, issues or suggestions please feel free to [Email me](mailto:tugrulgkc1@gmail.com)
