@@ -100,7 +100,7 @@ def process_yelp_business_data():
         ["hours", "attributes", "`attributes.Ambience`", "`attributes.Music`", "`attributes.GoodForMeal`",
          "`attributes.BusinessParking`"])
 
-    # Step 8: Saving processed business dynamic frame to S3 Bucket as .parquet format
+    # Step 9: Saving processed business dynamic frame to S3 Bucket as .parquet format
     save_dynamic_frame_to_S3(latest_business_dynamic_frame, "s3://glue-yelp-output/yelp-business-processed")
 
 
@@ -135,6 +135,7 @@ def process_yelp_review_data():
         df=review_df,
         path="s3://glue-yelp-output/yelp-review-processed/processed-yelp-review.parquet"
     )
+
 
 if __name__ == '__main__':
     ## @params: [JOB_NAME]
