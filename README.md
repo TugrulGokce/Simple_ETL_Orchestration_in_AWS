@@ -1,5 +1,5 @@
 # Simple ETL Orchestration in AWS
-This repository contains the necessary code and resources used in the Medium blog post titled "ETL Orchestration on Yelp Dataset using Glue and AWS MWAA (Airflow)". It demonstrates how to orchestrate an ETL process using AWS Glue and AWS Managed Workflows for Apache Airflow (MWAA) on a Yelp dataset.
+This repository contains the necessary code and resources used in the Medium blog post titled ["ETL Orchestration on Yelp Dataset using Glue and AWS MWAA (Airflow)"](https://medium.com/@TugrulGokce/etl-orchestration-on-yelp-dataset-using-glue-and-aws-mwaa-airflow-bcdfc676e46b). It demonstrates how to orchestrate an ETL process using AWS Glue and AWS Managed Workflows for Apache Airflow (MWAA) on a Yelp dataset.
 
 ![Architecture of Project](./permissions/Architecture_of_Project.png)
 
